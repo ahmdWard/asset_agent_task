@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Float, Date,DateTime
 from datetime import datetime
-from database import Base
+from app.database import Base
 import uuid
 
 
@@ -29,3 +29,5 @@ class AssetStatus:
     @classmethod
     def all(cls):
         return [cls.ACTIVE, cls.SOLD, cls.DONATED]
+    
+

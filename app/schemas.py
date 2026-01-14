@@ -25,3 +25,15 @@ class AssetBase(BaseModel):
     description: Optional[str] = Field(None, max_length=500, description="Optional description")
 
 
+class AssetCreate(AssetBase):
+    """Schema for creating a new asset (what user sends in POST request)"""
+    pass
+
+class AssetResponse(AssetBase):
+    """Schema for asset response (what API returns)"""
+    id: str
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True 
