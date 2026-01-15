@@ -29,7 +29,7 @@ class AssetCRUD:
     
 
 
-    def get_all(self, db: Session, skip: int = 0, limit: int = 100,category: Optional[str]= None, status: Optional[str] = None) -> List[Asset]:
+    def get_all(self, db: Session, skip: int = 0, limit: int = 100,category: Optional[str]= None, status: Optional[str] = None, min_value:Optional[int]= None, max_value:Optional[int]= None, purchase_date_from:Optional[datetime]=None, purchase_date_to:Optional[datetime]=None) -> List[Asset]:
         """Get all assets"""
 
         query = db.query(Asset).filter(Asset.is_deleted == False)
@@ -40,10 +40,24 @@ class AssetCRUD:
         if status: 
             query = query.filter(Asset.status.ilike(status))
 
+        if min_value:
+            query = query.filter(Asset.value >= min_value)
+
+        if max_value: 
+            query = query.filter(Asset.value <=max_value)
+
+        if purchase_date_from:
+           query = query.filter(Asset.purchase_date >= purchase_date_from)
+
+        if purchase_date_to:
+           query = query.filter(Asset.purchase_date <= purchase_date_to)
+        
+        
+
         return query.offset(skip).limit(limit).all()
 
     
-    def count(self, db: Session, category: Optional[str]= None, status:Optional[str] = None) -> int:
+    def count(self, db: Session, category: Optional[str]= None, status:Optional[str] = None, min_value:Optional[int]= None, max_value:Optional[int]= None, purchase_date_from:Optional[datetime]=None, purchase_date_to:Optional[datetime]=None) -> int:
         """Count total assets"""
         query = db.query(Asset).filter(Asset.is_deleted == False)
         if category:
@@ -51,6 +65,19 @@ class AssetCRUD:
 
         if status: 
             query = query.filter(Asset.status.ilike(status))
+
+        if min_value:
+            query = query.filter(Asset.value >= min_value)
+
+        if max_value: 
+            query = query.filter(Asset.value <=max_value)
+
+        if purchase_date_from:
+           query = query.filter(Asset.purchase_date >= purchase_date_from)
+
+        if purchase_date_to:
+           query = query.filter(Asset.purchase_date <= purchase_date_to)
+        
 
         return query.count()
     

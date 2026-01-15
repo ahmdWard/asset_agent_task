@@ -8,6 +8,8 @@ from app.schemas import (
 from sqlalchemy.orm import Session
 
 from typing import Optional
+from datetime import datetime
+
 
 
 
@@ -58,11 +60,15 @@ def get_assets(
     db: Session = Depends(get_db),
     category: Optional[str] = Query(None, description="Filter by category"),
     status: Optional[str] = Query(None, description="Filter by status"),
+    min_value:Optional[int] =Query(None,description="Filter by Min value"),
+    max_value:Optional[int]=Query(None,description="Filter by Max Value"),
+    purchase_date_from:Optional[datetime]= Query(None,description="Filter by purchase_date_from"),
+    purchase_date_to:Optional[datetime]= Query(None,description="Filter by purchase_date_to")
 
 ):
     """Get all assets"""
-    assets = asset_crud.get_all(db, skip, limit, category, status)
-    total = asset_crud.count(db, category, status)
+    assets = asset_crud.get_all(db, skip, limit, category, status, min_value, max_value,purchase_date_from,purchase_date_to)
+    total = asset_crud.count(db, category, status,min_value, max_value,purchase_date_from,purchase_date_to)
     return AssetListResponse(total=total, assets=assets)
 
 
