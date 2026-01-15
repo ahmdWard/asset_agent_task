@@ -3,7 +3,7 @@ from datetime import datetime, date
 from typing import Optional
 from enum import Enum
 
-from app.models import AssetStatus
+from app.models import ( AssetStatus, AssetCategory )
 
 
 
@@ -14,11 +14,19 @@ class AssetStatusEnum(str, Enum):
     donated = AssetStatus.DONATED
 
 
+class AssetCategoryEnum(str, Enum):
+    electronics = AssetCategory.ELECTRONICS
+    furniture = AssetCategory.FURNITURE
+    vehicle = AssetCategory.VEHICLE
+    jewelry = AssetCategory.JEWELRY
+    other = AssetCategory.OTHER
+
+
 
 class AssetBase(BaseModel):
     """Base asset schema with common fields"""
     name: str = Field(..., min_length=1, max_length=200, description="Asset name")
-    category:str = Field(..., description="Asset category")
+    category:AssetCategoryEnum = Field(..., description="Asset category")
     value: float = Field(..., gt=0, description="Asset value (must be positive)")
     purchase_date: date = Field(..., description="Purchase date (YYYY-MM-DD)")
     status: AssetStatusEnum = Field(default=AssetStatusEnum.active, description="Asset status")
@@ -48,7 +56,7 @@ class AssetListResponse(BaseModel):
 class AssetUpdate(BaseModel):
     """Schema for updating new asset"""
     name: Optional[str] = Field(None, min_length=1, max_length=200)
-    category: Optional[str] = None
+    category: Optional[AssetCategoryEnum] = None
     value: Optional[float] = Field(None, gt=0)
     purchase_date: Optional[date] = None
     status: Optional[AssetStatusEnum] = None

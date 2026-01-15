@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Float, Date,DateTime
+from sqlalchemy import Column, String, Float, Date, DateTime, Boolean
 from datetime import datetime
 from app.database import Base
 import uuid
@@ -21,6 +21,9 @@ class Asset(Base):
     description = Column(String(500), nullable=True)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
+    is_deleted = Column(Boolean, default=False, nullable=False, index=True)
+    deleted_at = Column(DateTime, nullable=True)
+
     
 
 class AssetStatus:
@@ -31,5 +34,18 @@ class AssetStatus:
     @classmethod
     def all(cls):
         return [cls.ACTIVE, cls.SOLD, cls.DONATED]
+    
+
+class AssetCategory:
+    """Valid asset category values"""
+    ELECTRONICS = "electronics"
+    FURNITURE = "furniture"
+    VEHICLE = "vehicle"
+    JEWELRY = "jewelry"
+    OTHER = "other"
+    
+    @classmethod
+    def all(cls):
+        return [cls.ELECTRONICS, cls.FURNITURE, cls.VEHICLE, cls.JEWELRY, cls.OTHER]
     
 

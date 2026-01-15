@@ -106,6 +106,25 @@ def update_asset(
 
 
 @app.delete(
+    f"{settings.API_V1_PREFIX}/assets/{{asset_id}}/hard-delete",
+    status_code=status.HTTP_204_NO_CONTENT,
+    tags=["assets"]
+)
+def delete_asset(
+    asset_id: str,
+    db: Session = Depends(get_db)
+):
+    """Delete an asset (Hard delete)"""
+    deleted = asset_crud.delete(db, asset_id)
+    
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Asset with ID {asset_id} not found"
+        )
+    
+
+@app.delete(
     f"{settings.API_V1_PREFIX}/assets/{{asset_id}}",
     status_code=status.HTTP_204_NO_CONTENT,
     tags=["assets"]
@@ -115,7 +134,7 @@ def delete_asset(
     db: Session = Depends(get_db)
 ):
     """Delete an asset (soft delete)"""
-    deleted = asset_crud.delete(db, asset_id)
+    deleted = asset_crud.soft_delete(db, asset_id)
     
     if not deleted:
         raise HTTPException(
