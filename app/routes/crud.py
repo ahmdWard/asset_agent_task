@@ -50,11 +50,13 @@ class AssetCRUD:
         query = db.query(Asset).filter(Asset.is_deleted == False)
         
         if category:
-         query = query.filter(Asset.category.ilike(category))
+         query = query.filter(Asset.category == category) # it's not fuzzy search it needs to be exact match!! 
 
         if status: 
-            query = query.filter(Asset.status.ilike(status))
+            query = query.filter(Asset.status == status) # same as category
 
+
+            #### after finishing task clean this code and wrap it insted of ugly if conditions.
         if min_value:
             query = query.filter(Asset.value >= min_value)
 
@@ -143,6 +145,9 @@ class AssetCRUD:
 
         if 'status' in updated_data and updated_data['status']:
             updated_data['status'] = updated_data['status'].value
+
+        if 'category' in updated_data and updated_data['category']:   #missed updating category after adding Asset Category Class 
+           updated_data['category'] = updated_data['category'].value
 
         for field, value in updated_data.items():
             setattr(db_asset, field, value)

@@ -119,24 +119,7 @@ def update_asset(
     return db_asset
 
 
-@app.delete(
-    f"{settings.API_V1_PREFIX}/assets/{{asset_id}}/hard-delete",
-    status_code=status.HTTP_204_NO_CONTENT,
-    tags=["assets"]
-)
-def delete_asset(
-    asset_id: str,
-    db: Session = Depends(get_db)
-):
-    """Delete an asset (Hard delete)"""
-    deleted = asset_crud.delete(db, asset_id)
-    
-    if not deleted:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Asset with ID {asset_id} not found"
-        )
-    
+## fix duplicate function issue compine both soft and hard delete depend on paramter Hard      
 
 @app.delete(
     f"{settings.API_V1_PREFIX}/assets/{{asset_id}}",
@@ -145,10 +128,15 @@ def delete_asset(
 )
 def delete_asset(
     asset_id: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    hard: bool = Query(False, description="Set true for hard delete")
+
 ):
-    """Delete an asset (soft delete)"""
-    deleted = asset_crud.soft_delete(db, asset_id)
+    """Delete an asset (soft delete by default, hard delete if hard=true)"""
+    if hard:
+        deleted = asset_crud.delete(db, asset_id)
+    else:
+        deleted = asset_crud.soft_delete(db, asset_id)
     
     if not deleted:
         raise HTTPException(
