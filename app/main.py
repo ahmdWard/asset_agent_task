@@ -7,6 +7,8 @@ from app.schemas import (
 )
 from sqlalchemy.orm import Session
 
+from typing import Optional
+
 
 
 settings = get_settings()
@@ -53,11 +55,14 @@ def create_asset(
 def get_assets(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    category: Optional[str] = Query(None, description="Filter by category"),
+    status: Optional[str] = Query(None, description="Filter by status"),
+
 ):
     """Get all assets"""
-    assets = asset_crud.get_all(db, skip=skip, limit=limit)
-    total = asset_crud.count(db)
+    assets = asset_crud.get_all(db, skip, limit, category, status)
+    total = asset_crud.count(db, category, status)
     return AssetListResponse(total=total, assets=assets)
 
 

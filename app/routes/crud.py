@@ -29,15 +29,30 @@ class AssetCRUD:
     
 
 
-    def get_all(self, db: Session, skip: int = 0, limit: int = 100) -> List[Asset]:
-        """Get all assets (basic version)"""
-        return db.query(Asset).filter(
-            Asset.is_deleted == True
-        ).offset(skip).limit(limit).all()
+    def get_all(self, db: Session, skip: int = 0, limit: int = 100,category: Optional[str]= None, status: Optional[str] = None) -> List[Asset]:
+        """Get all assets"""
+
+        query = db.query(Asset).filter(Asset.is_deleted == False)
+        
+        if category:
+         query = query.filter(Asset.category.ilike(category))
+
+        if status: 
+            query = query.filter(Asset.status.ilike(status))
+
+        return query.offset(skip).limit(limit).all()
+
     
-    def count(self, db: Session) -> int:
+    def count(self, db: Session, category: Optional[str]= None, status:Optional[str] = None) -> int:
         """Count total assets"""
-        return db.query(Asset).filter(Asset.is_deleted == False).count()
+        query = db.query(Asset).filter(Asset.is_deleted == False)
+        if category:
+         query = query.filter(Asset.category.ilike(category))
+
+        if status: 
+            query = query.filter(Asset.status.ilike(status))
+
+        return query.count()
     
 
     def get_by_id(self, db: Session, asset_id: str) -> Optional[Asset]:
