@@ -1,8 +1,11 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from app.config import settings
+from sqlalchemy.orm import sessionmaker, Session
+from typing import Generator
 
+from app.config import get_settings
+
+settings = get_settings()
 
 SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
 
@@ -21,3 +24,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
+def init_db() -> None:
+    """Initialize database - create all tables"""
+    Base.metadata.create_all(bind=engine)

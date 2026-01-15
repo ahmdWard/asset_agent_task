@@ -3,7 +3,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-class Settings:
-    DATABASE_URL = os.getenv("DATABASE_URL")
+class get_settings:
+    DATABASE_URL:str = os.getenv("DATABASE_URL")
+    PROJECT_NAME: str = "Asset Management API"
+    API_V1_PREFIX: str = "/api/v1"
 
-settings = Settings()
+    class Config:
+        env_file = ".env"
+        case_sensitive = True
+ 
+
+settings = get_settings()
+

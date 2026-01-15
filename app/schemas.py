@@ -37,3 +37,19 @@ class AssetResponse(AssetBase):
     
     class Config:
         from_attributes = True 
+
+class AssetListResponse(BaseModel):
+    """Schema for paginated list of assets"""
+    total: int
+    assets: list[AssetResponse]
+
+
+
+class AssetUpdate(BaseModel):
+    """Schema for updating new asset"""
+    name: Optional[str] = Field(None, min_length=1, max_length=200)
+    category: Optional[str] = None
+    value: Optional[float] = Field(None, gt=0)
+    purchase_date: Optional[date] = None
+    status: Optional[AssetStatusEnum] = None
+    description: Optional[str] = Field(None, max_length=500)

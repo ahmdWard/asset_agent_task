@@ -19,6 +19,8 @@ class Asset(Base):
     status = Column(String,nullable=False, index=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     description = Column(String(500), nullable=True)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
     
 
 class AssetStatus:
