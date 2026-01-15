@@ -63,12 +63,15 @@ def get_assets(
     min_value:Optional[int] =Query(None,description="Filter by Min value"),
     max_value:Optional[int]=Query(None,description="Filter by Max Value"),
     purchase_date_from:Optional[datetime]= Query(None,description="Filter by purchase_date_from"),
-    purchase_date_to:Optional[datetime]= Query(None,description="Filter by purchase_date_to")
+    purchase_date_to:Optional[datetime]= Query(None,description="Filter by purchase_date_to"),
+    search:Optional[str]=Query(None,description="Filter using search keyWord"),
+    sort_by: str = Query("created_at", description="Field to sort by"),
+    order: str = Query("desc", regex="^(asc|desc)$", description="Sort order"),
 
 ):
     """Get all assets"""
-    assets = asset_crud.get_all(db, skip, limit, category, status, min_value, max_value,purchase_date_from,purchase_date_to)
-    total = asset_crud.count(db, category, status,min_value, max_value,purchase_date_from,purchase_date_to)
+    assets = asset_crud.get_all(db, skip, limit, category, status, min_value, max_value,purchase_date_from,purchase_date_to,search,sort_by,order)
+    total = asset_crud.count(db, category, status,min_value, max_value,purchase_date_from,purchase_date_to,search)
     return AssetListResponse(total=total, assets=assets)
 
 

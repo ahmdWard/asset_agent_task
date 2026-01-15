@@ -1,4 +1,5 @@
-from sqlalchemy.orm import Session 
+from sqlalchemy.orm import Session
+from sqlalchemy import  or_
 from typing import List, Optional
 from datetime import datetime
 
@@ -29,7 +30,21 @@ class AssetCRUD:
     
 
 
-    def get_all(self, db: Session, skip: int = 0, limit: int = 100,category: Optional[str]= None, status: Optional[str] = None, min_value:Optional[int]= None, max_value:Optional[int]= None, purchase_date_from:Optional[datetime]=None, purchase_date_to:Optional[datetime]=None) -> List[Asset]:
+    def get_all(
+        self,
+        db: Session,
+        skip: int = 0,
+        limit: int = 100,
+        category: Optional[str]= None,
+        status: Optional[str] = None,
+        min_value:Optional[int]= None,
+        max_value:Optional[int]= None,
+        purchase_date_from:Optional[datetime]=None,
+        purchase_date_to:Optional[datetime]=None,
+        search:Optional[str]=None,
+        sort_by:str="created_at",
+        order:str="desc"
+        ) -> List[Asset]:
         """Get all assets"""
 
         query = db.query(Asset).filter(Asset.is_deleted == False)
@@ -51,13 +66,35 @@ class AssetCRUD:
 
         if purchase_date_to:
            query = query.filter(Asset.purchase_date <= purchase_date_to)
+
+        if search:
+            search_filter= or_(
+                Asset.name.ilike(f"%{search}%"),
+                Asset.description.ilike(f"%{search}%")
+            )
+            query = query.filter(search_filter)
+        
+        if order == "asc":
+            query = query.order_by(getattr(Asset, sort_by).asc())
+        else:
+            query = query.order_by(getattr(Asset, sort_by).desc())
         
         
 
         return query.offset(skip).limit(limit).all()
 
     
-    def count(self, db: Session, category: Optional[str]= None, status:Optional[str] = None, min_value:Optional[int]= None, max_value:Optional[int]= None, purchase_date_from:Optional[datetime]=None, purchase_date_to:Optional[datetime]=None) -> int:
+    def count(
+        self,
+        db: Session,
+        category: Optional[str]= None,
+        status:Optional[str] = None,
+        min_value:Optional[int]= None,
+        max_value:Optional[int]= None,
+        purchase_date_from:Optional[datetime]=None,
+        purchase_date_to:Optional[datetime]=None,
+        search: Optional[str] = None,
+        ) -> int:
         """Count total assets"""
         query = db.query(Asset).filter(Asset.is_deleted == False)
         if category:
@@ -77,6 +114,13 @@ class AssetCRUD:
 
         if purchase_date_to:
            query = query.filter(Asset.purchase_date <= purchase_date_to)
+
+        if search:
+            search_filter = or_(
+                Asset.name.ilike(f"%{search}%"),
+                Asset.description.ilike(f"%{search}%")
+            )
+            query = query.filter(search_filter)
         
 
         return query.count()
