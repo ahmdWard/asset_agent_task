@@ -65,11 +65,25 @@ def get_assets(
     purchase_date_from:Optional[datetime]= Query(None,description="Filter by purchase_date_from"),
     purchase_date_to:Optional[datetime]= Query(None,description="Filter by purchase_date_to"),
     search:Optional[str]=Query(None,description="Filter using search keyWord"),
-    sort_by: str = Query("created_at", description="Field to sort by"),
+    sort_by: str = Query("created_at", regex="^(name|value|purchase_date|created_at|updated_at)$",description="Field to sort by"), ## make sure sort by valid fields
     order: str = Query("desc", regex="^(asc|desc)$", description="Sort order"),
 
 ):
     """Get all assets"""
+
+    if min_value is not None and max_value is not None:
+      if min_value > max_value:
+        raise HTTPException(
+            status_code=400,
+            detail="min_value cannot be greater than max_value"
+        )
+      
+    if purchase_date_from is not None and purchase_date_to is not None:
+      if purchase_date_from > purchase_date_to:
+        raise HTTPException(
+            status_code=400,
+            detail="purchate_date_from cannot be greater than purchate_date_to"
+        )
     assets = asset_crud.get_all(db, skip, limit, category, status, min_value, max_value,purchase_date_from,purchase_date_to,search,sort_by,order)
     total = asset_crud.count(db, category, status,min_value, max_value,purchase_date_from,purchase_date_to,search)
     return AssetListResponse(total=total, assets=assets)
@@ -120,7 +134,8 @@ def update_asset(
 
 
 ## fix duplicate function issue compine both soft and hard delete depend on paramter Hard      
-
+### i can't delete soft deleted records if there is time at the end you can give it a try 
+## you need to edit get_by_id to be compatable with it ! 
 @app.delete(
     f"{settings.API_V1_PREFIX}/assets/{{asset_id}}",
     status_code=status.HTTP_204_NO_CONTENT,

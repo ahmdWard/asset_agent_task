@@ -2,10 +2,10 @@
 API CRUD 
 priority!!! 
 
-- Add category and status filters []
-- Add value range filters []
-- Add date range and search []
-- Adding Tests UNTIL This point before IMPLEMENTING AI AGENT [] 
+- Add category and status filters [-]
+- Add value range filters [-]
+- Add date range and search [-]
+- Adding Tests UNTIL This point before IMPLEMENTING AI AGENT [-] 
 
 LATER 
 - Analytics Endpoint []
