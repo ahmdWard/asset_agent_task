@@ -68,3 +68,15 @@ class AssetUpdate(BaseModel):
     purchase_date: Optional[date] = None
     status: Optional[AssetStatusEnum] = None
     description: Optional[str] = Field(None, max_length=500)
+
+
+
+class AgentQuery(BaseModel):
+    question: str = Field(..., min_length=1, description="Question about assets")
+
+
+class AgentResponse(BaseModel):
+    answer: str
+    sources: list[str] = []
+    query_type: str = "general"
+    assets_found: Optional[int] = None

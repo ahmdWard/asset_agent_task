@@ -3,8 +3,9 @@ from app.database import get_db,init_db
 from app.routes.crud import asset_crud
 from app.config import get_settings
 from app.schemas import (
-    AssetCreate, AssetResponse, AssetListResponse, AssetUpdate
+    AssetCreate, AssetResponse, AssetListResponse, AssetUpdate, AgentResponse, AgentQuery
 )
+from app.agent import AssetAgent
 from sqlalchemy.orm import Session
 
 from typing import Optional
@@ -157,4 +158,24 @@ def delete_asset(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Asset with ID {asset_id} not found"
+        )
+
+@app.post(
+    f"{settings.API_V1_PREFIX}/agent/query",
+    response_model=AgentResponse,
+    tags=["agent"]
+)
+def query_agent(
+    query: AgentQuery,
+    db: Session = Depends(get_db)
+):
+
+    try:
+        agent = AssetAgent(db)
+        result = agent.query(query.question)
+        return AgentResponse(**result)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Agent error: {str(e)}"
         )
