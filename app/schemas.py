@@ -32,12 +32,12 @@ class AssetBase(BaseModel):
     status: AssetStatusEnum = Field(default=AssetStatusEnum.active, description="Asset status")
     description: Optional[str] = Field(None, max_length=500, description="Optional description")
 
-    #### fixing adding purches_date in the future 
-    @field_validator('purchase_date')
-    def validate_purchase_date(cls, purchase_date):
-        if purchase_date > date.today():
-            raise ValueError('purchase_date cannot be in the future')
-        return purchase_date
+    # #### fixing adding purches_date in the future 
+    # @field_validator('purchase_date')
+    # def validate_purchase_date(cls, purchase_date):
+    #     if purchase_date > date.today():
+    #         raise ValueError('purchase_date cannot be in the future')
+    #     return purchase_date
 
 
 class AssetCreate(AssetBase):
