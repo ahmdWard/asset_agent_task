@@ -3,6 +3,9 @@ from sqlalchemy.orm import Session
 from langchain_core.tools import Tool
 from langchain_core.prompts import PromptTemplate
 
+from fastapi import HTTPException
+
+
 from langchain_classic.agents import AgentExecutor, create_react_agent ### the libirary moved after version 1 (old docs)
 import re
 
@@ -114,9 +117,9 @@ class AssetAgent:
             executor = AgentExecutor(
                 agent=agent,
                 tools=self.tools,
-                verbose=True, 
+                verbose=False, 
                 handle_parsing_errors=True,
-                max_iterations=5
+                max_iterations=2
             )
             
             result = executor.invoke({"input": question})
@@ -142,10 +145,18 @@ class AssetAgent:
                 "query_type": "success",
                 "assets_found": len(unique_sources) if unique_sources else None
             }
+        except HTTPException:
+            raise
         except Exception as e:
-            return {
-                "answer": f"Agent Error: {str(e)}",
-                "sources": [],
-                "query_type": "error",
-                "assets_found": 0
-            }
+            error_str = str(e).lower()
+
+            if "rate limit" in error_str or "429" in error_str:
+                raise HTTPException(
+                    status_code=429,
+                    detail="OpenAI rate limit reached. Please retry later."
+                )
+
+            raise HTTPException(
+                status_code=500,
+                detail="Internal agent error"
+            )

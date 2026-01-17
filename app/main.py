@@ -174,6 +174,8 @@ def query_agent(
         agent = AssetAgent(db)
         result = agent.query(query.question)
         return AgentResponse(**result)
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500,
