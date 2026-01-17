@@ -23,6 +23,7 @@ class AssetAgent:
             model="gpt-4o-mini",
             api_key=settings.OPEN_API_KEY, 
             temperature=0,
+            max_tokens=300 # forget to add max token causing reach limit 
         )
 
         self.tools = [
@@ -117,7 +118,7 @@ class AssetAgent:
             executor = AgentExecutor(
                 agent=agent,
                 tools=self.tools,
-                verbose=False, 
+                verbose=False,  ## convert it to true when you need to see the reasonoing 
                 handle_parsing_errors=True,
                 max_iterations=2
             )
